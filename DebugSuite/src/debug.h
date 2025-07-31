@@ -79,8 +79,9 @@
 
 /** \addtogroup message out
  ** \{ */
-// \def 0: not show file name  1: show file name
-#define DEBUG_PRINT_SHOW_FILENAME   (0)
+// \def 0: false  1: true
+#define DEBUG_PRINT_SHOW_COLOR   	(1)
+#define DEBUG_PRINT_SHOW_FILENAME   (1)
 /** \} */
 
 /** \addtogroup assert
@@ -202,18 +203,28 @@
 #endif
 
 
-#define DEBUG_PRINT_COLOR(__enable, __font_attr,__fg_color, __bg_color, __fmt, ...) 	\
-	do { 																				\
-		if(__enable){ 																	\
-			printf("\033[");															\
-			__font_attr >= 0 && (printf("%d", 	__font_attr),1); 						\
-			__fg_color  >= 0 && (printf(";%d",  __fg_color), 1); 						\
-			__bg_color  >= 0 && (printf(";%d",  __bg_color), 1); 						\
-			printf("m");																\
-			DEBUG_PRINT(__enable,__fmt,##__VA_ARGS__);									\
-			printf("\033[0m\r\n");														\
-		}																				\
-	} while (0)
+#if DEBUG_PRINT_SHOW_COLOR == 1
+	#define DEBUG_PRINT_COLOR(__enable, __font_attr,__fg_color, __bg_color, __fmt, ...) 	\
+		do { 																				\
+			if(__enable){ 																	\
+				printf("\033[");															\
+				__font_attr >= 0 && (printf("%d", 	__font_attr),1); 						\
+				__fg_color  >= 0 && (printf(";%d",  __fg_color), 1); 						\
+				__bg_color  >= 0 && (printf(";%d",  __bg_color), 1); 						\
+				printf("m");																\
+				DEBUG_PRINT(__enable,__fmt,##__VA_ARGS__);									\
+				printf("\033[0m\r\n");														\
+			}																				\
+		} while (0)
+#else
+	#define DEBUG_PRINT_COLOR(__enable, __font_attr,__fg_color, __bg_color, __fmt, ...) 	\
+		do { 																				\
+			if(__enable){ 																	\
+				DEBUG_PRINT(__enable,__fmt,##__VA_ARGS__);									\
+				printf("\r\n");																\
+			}																				\
+		} while (0)
+#endif
 
 #define DEBUG_PRINT_DEBUG(__enable,fmt, ...)   DEBUG_PRINT_COLOR(__enable, -1, DEBUG_PRINT_COLOR_FG_BRIGHT_BLACK, 	-1, "[debug] "   fmt, ##__VA_ARGS__)
 #define DEBUG_PRINT_INFO(__enable,fmt, ...)    DEBUG_PRINT_COLOR(__enable, -1, DEBUG_PRINT_COLOR_FG_BLUE, 			-1, "[info] "    fmt, ##__VA_ARGS__)
