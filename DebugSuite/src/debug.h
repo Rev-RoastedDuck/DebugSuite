@@ -66,11 +66,6 @@
 /******************************************************************************/
 /*------------------------------------CONFIG----------------------------------*/
 /******************************************************************************/
-/** \addtogroup commom
- ** \{ */
-#define DEBUG_COMMOM_USE_STRING_LIB	(0)
-/** \} */
-
 /** \addtogroup measure execution time
  ** \{ */
 // \def size_t fnt (void);
@@ -79,7 +74,7 @@
 
 /** \addtogroup message out
  ** \{ */
-// \def 0: false  1: true
+// \def 0: not show file name  1: show file name
 #define DEBUG_PRINT_SHOW_COLOR   	(1)
 #define DEBUG_PRINT_SHOW_FILENAME   (1)
 /** \} */
@@ -94,6 +89,7 @@
 /*----------------------------------INCLUDE-----------------------------------*/
 /******************************************************************************/
 #include "stdio.h"
+#include "string.h"
 
 /******************************************************************************/
 /*------------------------------------MARCO-----------------------------------*/
@@ -123,7 +119,7 @@
 		__time += elapsed_ms;                                                           				\
 		__execute_time++;                                                                				\
 		if (__execute_time >= __max_execute_time) {                                                		\
-			printf("[%s:%d] time taken: %ld ms\n", __FILE__, __LINE__, (__time / __execute_time)); 	\
+			printf("[%s:%d] time taken: %ld ms\n", __FILE__, __LINE__, (__time / __execute_time)); 		\
 			__execute_time = 0;                                                          				\
 			__time = 0;                                                                 				\
 		}																								\
@@ -194,6 +190,7 @@
             }  \
         } while (0)
 #else
+	#undef DEBUG_PRINT
     #define DEBUG_PRINT(__enable, __fmt, ...)  \
         do {  \
             if (__enable) {  \
@@ -216,6 +213,14 @@
 				printf("\033[0m\r\n");														\
 			}																				\
 		} while (0)
+
+	#define DEBUG_PRINT_DEBUG(__enable,fmt, ...)   DEBUG_PRINT_COLOR(__enable, -1, DEBUG_PRINT_COLOR_FG_BRIGHT_BLACK, 	-1, fmt, ##__VA_ARGS__)
+	#define DEBUG_PRINT_INFO(__enable,fmt, ...)    DEBUG_PRINT_COLOR(__enable, -1, DEBUG_PRINT_COLOR_FG_BLUE, 			-1, fmt, ##__VA_ARGS__)
+	#define DEBUG_PRINT_NOTICE(__enable,fmt, ...)  DEBUG_PRINT_COLOR(__enable, -1, DEBUG_PRINT_COLOR_FG_CYAN, 			-1, fmt, ##__VA_ARGS__)
+	#define DEBUG_PRINT_WARNING(__enable,fmt, ...) DEBUG_PRINT_COLOR(__enable, -1, DEBUG_PRINT_COLOR_FG_YELLOW, 		-1, fmt, ##__VA_ARGS__)
+	#define DEBUG_PRINT_ERROR(__enable,fmt, ...)   DEBUG_PRINT_COLOR(__enable, -1, DEBUG_PRINT_COLOR_FG_RED, 			-1, fmt, ##__VA_ARGS__)
+	#define DEBUG_PRINT_FATAL(__enable,fmt, ...)   DEBUG_PRINT_COLOR(__enable,  1, DEBUG_PRINT_COLOR_FG_BRIGHT_RED, 	-1, fmt, ##__VA_ARGS__)
+	#define DEBUG_PRINT_SUCCESS(__enable,fmt, ...) DEBUG_PRINT_COLOR(__enable, -1, DEBUG_PRINT_COLOR_FG_GREEN, 			-1, fmt, ##__VA_ARGS__)
 #else
 	#define DEBUG_PRINT_COLOR(__enable, __font_attr,__fg_color, __bg_color, __fmt, ...) 	\
 		do { 																				\
@@ -224,15 +229,15 @@
 				printf("\r\n");																\
 			}																				\
 		} while (0)
-#endif
 
-#define DEBUG_PRINT_DEBUG(__enable,fmt, ...)   DEBUG_PRINT_COLOR(__enable, -1, DEBUG_PRINT_COLOR_FG_BRIGHT_BLACK, 	-1, "[debug] "   fmt, ##__VA_ARGS__)
-#define DEBUG_PRINT_INFO(__enable,fmt, ...)    DEBUG_PRINT_COLOR(__enable, -1, DEBUG_PRINT_COLOR_FG_BLUE, 			-1, "[info] "    fmt, ##__VA_ARGS__)
-#define DEBUG_PRINT_NOTICE(__enable,fmt, ...)  DEBUG_PRINT_COLOR(__enable, -1, DEBUG_PRINT_COLOR_FG_CYAN, 			-1, "[notice] "  fmt, ##__VA_ARGS__)
-#define DEBUG_PRINT_WARNING(__enable,fmt, ...) DEBUG_PRINT_COLOR(__enable, -1, DEBUG_PRINT_COLOR_FG_YELLOW, 		-1, "[warning] " fmt, ##__VA_ARGS__)
-#define DEBUG_PRINT_ERROR(__enable,fmt, ...)   DEBUG_PRINT_COLOR(__enable, -1, DEBUG_PRINT_COLOR_FG_RED, 			-1, "[error] "   fmt, ##__VA_ARGS__)
-#define DEBUG_PRINT_FATAL(__enable,fmt, ...)   DEBUG_PRINT_COLOR(__enable,  1, DEBUG_PRINT_COLOR_FG_BRIGHT_RED, 	-1, "[fatal] "   fmt, ##__VA_ARGS__)
-#define DEBUG_PRINT_SUCCESS(__enable,fmt, ...) DEBUG_PRINT_COLOR(__enable, -1, DEBUG_PRINT_COLOR_FG_GREEN, 			-1, "[success] " fmt, ##__VA_ARGS__)
+	#define DEBUG_PRINT_DEBUG(__enable,fmt, ...)   DEBUG_PRINT_COLOR(__enable, -1, DEBUG_PRINT_COLOR_FG_BRIGHT_BLACK, 	-1, fmt, ##__VA_ARGS__)
+	#define DEBUG_PRINT_INFO(__enable,fmt, ...)    DEBUG_PRINT_COLOR(__enable, -1, DEBUG_PRINT_COLOR_FG_BLUE, 			-1, fmt, ##__VA_ARGS__)
+	#define DEBUG_PRINT_NOTICE(__enable,fmt, ...)  DEBUG_PRINT_COLOR(__enable, -1, DEBUG_PRINT_COLOR_FG_CYAN, 			-1, fmt, ##__VA_ARGS__)
+	#define DEBUG_PRINT_WARNING(__enable,fmt, ...) DEBUG_PRINT_COLOR(__enable, -1, DEBUG_PRINT_COLOR_FG_YELLOW, 		-1, fmt, ##__VA_ARGS__)
+	#define DEBUG_PRINT_ERROR(__enable,fmt, ...)   DEBUG_PRINT_COLOR(__enable, -1, DEBUG_PRINT_COLOR_FG_RED, 			-1, fmt, ##__VA_ARGS__)
+	#define DEBUG_PRINT_FATAL(__enable,fmt, ...)   DEBUG_PRINT_COLOR(__enable,  1, DEBUG_PRINT_COLOR_FG_BRIGHT_RED, 	-1, fmt, ##__VA_ARGS__)
+	#define DEBUG_PRINT_SUCCESS(__enable,fmt, ...) DEBUG_PRINT_COLOR(__enable, -1, DEBUG_PRINT_COLOR_FG_GREEN, 			-1, fmt, ##__VA_ARGS__)
+#endif
 
 void __debug_print_values(char *name_line, double values[], int count);
 #define DEBUG_PRINT_VALUES(...) 														\
