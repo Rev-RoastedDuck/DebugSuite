@@ -27,39 +27,39 @@
 
 
 ## Directory Structure
-- `src/`: Core implementation of DebugSuite (`debug.c`, `debug.h`)
-- `test/`: Example and test code for DebugSuite
+- `DebugSuite/`: Core implementation of DebugSuite (`debug_suite.c`, `debug_suite.h`)
+- `Test/`: Example and test code for DebugSuite
 
 ## Quick Start
 ### 1. Clone the repository
 ```bash
 git clone https://github.com/Rev-RoastedDuck/DebugSuite.git
-cd DebugSuite/DebugSuite
+cd DebugSuite
 ```
 
 ### 2. Build and run the test project
 ```bash
-cd test
-gcc -I../src -o start test.c ../src/debug.c
+cd Test
+gcc -I../DebugSuite -o start test.c ../DebugSuite/debug_suite.c
 ./start
 ```
 
 ### 3. Integrate into your project
-- Copy `debug.h` and `debug.c` from `src/` into your project.
-- Include `debug.h` in your source files.
+- Copy `debug_suite.h` and `debug_suite.c` from `DebugSuite/` into your project.
+- Include `debug_suite.h` in your source files.
 - Use the provided macros for logging, timing, and assertions.
 
 Example usage:
 
 ```c
-#include "debug.h"
+#include "debug_suite.h"
 
 int main(void) {
     int a = 42;
     float b = 3.14f;
 
     DEBUG_PRINT_INFO(1, "Application started. a=%d, b=%.2f", a, b);
-    TIME_TAKEN_SATRT(1);
+    TIME_TAKEN_START(1);
     // ... your code ...
     TIME_TAKEN_END;
     DEBUG_ASSERT(a > 0);
@@ -68,7 +68,7 @@ int main(void) {
 ```
 
 ## Documentation
-See the comments in [`src/debug.h`](DebugSuite/src/debug.h) for API usage and macro descriptions.
+See the comments in [`DebugSuite/debug_suite.h`](DebugSuite/debug_suite.h) for API usage and macro descriptions.
 
 ## License
-This project **ModemSuite** is released under the Apache License 2.0. For details, please refer to [**LICENSE**](../LICENSE)
+This project **DebugSuite** is released under the Apache License 2.0. For details, please refer to [**LICENSE**](LICENSE)
