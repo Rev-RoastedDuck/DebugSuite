@@ -8,7 +8,7 @@
  * :copyright: (c) 2025 by Rev-RoastedDuck.
  */
 
-#include "debug.h"
+#include "debug_suit.h"
 #include <sys/time.h>
 #include <unistd.h>
 
