@@ -8,15 +8,15 @@
  * :copyright: (c) 2025 by Rev-RoastedDuck.
  */
 
-#include "debug_suit.h"
+#include "debug_suite.h"
 #include <sys/time.h>
 #include <unistd.h>
 
 int main(void){
 
-    TIME_TAKEN_SATRT(1);
-    usleep(10000);
-    TIME_TAKEN_END;
+    // TIME_TAKEN_START(1);
+    // usleep(10000);
+    // TIME_TAKEN_END;
 
     DEBUG_PRINT(1,"hello\r\n");
     

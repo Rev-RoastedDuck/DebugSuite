@@ -1,11 +1,11 @@
 /*
- * debug_suit.h
+ * debug_suite.h
  *	
  *  Doc:
  *	  \{
  *		API:
  *			measure execution time: 
- *					TIME_TAKEN_SATRT 
+ *					TIME_TAKEN_START 
  *					TIME_TAKEN_END
  *			message out:
  *					DEBUG_PRINT(__enable, __fmt, ...)
@@ -28,7 +28,7 @@
  *		EXAMPLE:
  *				- measure execution time:
  *						``` c
- *							TIME_TAKEN_SATRT(1);
+ *							TIME_TAKEN_START(1);
  *							usleep(10000);
  *							TIME_TAKEN_END;
  *						```
@@ -60,8 +60,8 @@
  * :copyright: (c) 2025 by Rev-RoastedDuck.
  */
 
-#ifndef DEBUG_RRD_H_
-#define DEBUG_RRD_H_
+#ifndef DEBUG_SUITE_H_
+#define DEBUG_SUITE_H_
 
 #include <stdint.h>
 
@@ -115,7 +115,7 @@ typedef uint32_t (*debug_get_time_fn_t)(void);
     #define DEBUG_MEASURE_EXECUTEION_TIME_GET_TIME_MS   __debug_measure_executeion_time_get_time_ms
 #endif
 
-#define TIME_TAKEN_SATRT(__max_execute_time__)					\
+#define TIME_TAKEN_START(__max_execute_time__)					\
 	do {														\
 		static size_t __start, __end;   				        \
 		static int __execute_time = 0;							\

@@ -1,5 +1,5 @@
 /*
- * debug_suit.c
+ * debug_suite.c
  *	
  *  Created on: 2025_07_31
  *      Author: Rev_RoastDuck
@@ -8,7 +8,7 @@
  * :copyright: (c) 2025 by Rev-RoastedDuck.
  */
 
-#include "debug_suit.h"
+#include "debug_suite.h"
 
 /** \addtogroup common
  ** \{ */
