@@ -18,10 +18,12 @@
 ![feature](./Docs/images/feature.png)
 
 ## Features
-- Multiple log levels: debug, info, notice, warning, error, fatal, success
+- Multiple log levels: debug, info, success, warning, error, fatal
 - Colorful and formatted console output for easy log distinction
+- Compile-time and runtime log-level filtering
 - Execution time measurement macros for performance profiling
-- Convenient value printing for variables and expressions
+- Convenient value printing with per-level variants
+- Hex dump output for binary data (16 bytes per line, hex + ASCII)
 - Flexible assertion macros with detailed error reporting
 - Minimal dependencies, easy to port and extend
 
@@ -37,19 +39,25 @@ git clone https://github.com/Rev-RoastedDuck/DebugSuite.git
 cd DebugSuite
 ```
 
-### 2. Build and run the test project
+### 2. Build and test
+Build the test project with CMake:
 ```bash
 cd Test
-gcc -I../DebugSuite -o start test.c ../DebugSuite/debug_suite.c
+cmake -S . -B build
+cmake --build build
 ./start
 ```
 
 ### 3. Integrate into your project
-- Copy `debug_suite.h` and `debug_suite.c` from `DebugSuite/` into your project.
-- Include `debug_suite.h` in your source files.
-- Use the provided macros for logging, timing, and assertions.
+**1) CMake integration**  
+```cmake
+add_subdirectory(path/to/DebugSuite debugsuite)
+target_link_libraries(your_target PRIVATE debugsuite)
+```
+**2) Manual integration**  
+Copy `debug_suite.h` and `debug_suite.c` from `DebugSuite/` into your project, and configure the include path and compile options in your build system.
 
-Example usage:
+**3) Example usage**  
 
 ```c
 #include "debug_suite.h"
@@ -57,12 +65,17 @@ Example usage:
 int main(void) {
     int a = 42;
     float b = 3.14f;
+    uint8_t buf[] = {0x01, 0x02, 0x03, 0x04};
 
     DEBUG_PRINT_INFO(1, "Application started. a=%d, b=%.2f", a, b);
-    TIME_TAKEN_START(1);
+    DEBUG_PRINT_VALUES(1, a, b);
+    DEBUG_PRINT_HEX(1, buf, sizeof(buf));
+
+    DEBUG_TIME_TAKEN_START(1, 3);
     // ... your code ...
-    TIME_TAKEN_END;
-    DEBUG_ASSERT(a > 0);
+    DEBUG_TIME_TAKEN_END;
+
+    DEBUG_ASSERT(DEBUG_ENABLE, a > 0);
     return 0;
 }
 ```

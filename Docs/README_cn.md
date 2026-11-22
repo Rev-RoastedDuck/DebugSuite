@@ -18,13 +18,14 @@
 ![feature](../Docs/images/feature.png)
 
 ## 功能特性
-- 多种日志级别：debug、info、notice、warning、error、fatal、success
+- 多种日志级别：debug、info、success、warning、error、fatal
 - 彩色格式化控制台输出，便于日志区分
+- 编译期与运行期日志级别过滤
 - 执行时间测量宏，用于性能分析
-- 方便的变量和表达式值打印
+- 方便的变量和表达式值打印，支持分级变体
+- 十六进制转储输出（每行 16 字节，hex + ASCII 两列）
 - 灵活的断言宏，提供详细的错误报告
 - 最小化依赖，易于移植和扩展
-
 
 ## 目录结构
 - `DebugSuite/`: DebugSuite 核心实现 (`debug_suite.c`、`debug_suite.h`)
@@ -37,32 +38,42 @@ git clone https://github.com/Rev-RoastedDuck/DebugSuite.git
 cd DebugSuite
 ```
 
-### 2. 构建并运行测试项目
+### 2. 构建和测试
+CMake 构建测试项目：
 ```bash
 cd Test
-gcc -I../DebugSuite -o start test.c ../DebugSuite/debug_suite.c
+cmake -S . -B build
+cmake --build build
 ./start
 ```
 
 ### 3. 集成到你的项目
-- 将 `DebugSuite/` 目录下的 `debug_suite.h` 和 `debug_suite.c` 复制到你的项目中。
-- 在源文件中包含 `debug_suite.h`。
-- 使用提供的宏进行日志、计时和断言。
+**1) CMake 集成**  
+```cmake
+add_subdirectory(path/to/DebugSuite debuguite)
+target_link_libraries(your_target PRIVATE debugsuite)
+```
+**2) 手动集成**  
+将 `DebugSuite/` 目录下的 `debug_suite.h` 和 `debug_suite.c` 拷贝到项目中，并在工程中配置包含路径与编译选项
 
-使用示例：
-
+**3) 使用示例**  
 ```c
 #include "debug_suite.h"
 
 int main(void) {
     int a = 42;
     float b = 3.14f;
+    uint8_t buf[] = {0x01, 0x02, 0x03, 0x04};
 
     DEBUG_PRINT_INFO(1, "应用程序已启动。a=%d, b=%.2f", a, b);
-    TIME_TAKEN_START(1);
+    DEBUG_PRINT_VALUES(1, a, b);
+    DEBUG_PRINT_HEX(1, buf, sizeof(buf));
+
+    DEBUG_TIME_TAKEN_START(1, 3);
     // ... 你的代码 ...
-    TIME_TAKEN_END;
-    DEBUG_ASSERT(a > 0);
+    DEBUG_TIME_TAKEN_END;
+
+    DEBUG_ASSERT(DEBUG_ENABLE, a > 0);
     return 0;
 }
 ```
