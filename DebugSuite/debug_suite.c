@@ -10,9 +10,29 @@
 
 #include "debug_suite.h"
 
-/** \addtogroup common
+#if DEBUG_PRINT_ENABLE
+/******************************************************************************/
+/*----------------------------------Private-----------------------------------*/
+/******************************************************************************/
+#if DEBUG_PRINT_SHOW_UTC_TIME
+#include "time.h"
+void __debug_format_utc_time(unsigned long long ms, char *buf) {
+	time_t sec = (time_t)(ms / 1000);
+	struct tm *t = gmtime(&sec);
+	if (t != 0) {
+		sprintf(buf, "%04d-%02d-%02d %02d:%02d:%02d",
+				t->tm_year + 1900, t->tm_mon + 1, t->tm_mday,
+				t->tm_hour, t->tm_min, t->tm_sec);
+	} else {
+		buf[0] = '\0';
+	}
+}
+#endif /* DEBUG_PRINT_SHOW_UTC_TIME */
+
+/** \addtogroup message out
  ** \{ */
-#if DEBUG_COMMOM_USE_STRING_LIB
+#if DEBUG_PRINT_VALUES_ENABLE
+#if DEBUG_COMMON_USE_STRING_LIB
 	#include "string.h"
 	#define __debug_common_strtok	strtok
 #else
@@ -70,31 +90,55 @@ char* __debug_common_strtok(char* str, const char* delim) {
 
     return token_start;
 }
-#endif
-/** \} */
+#endif /* DEBUG_COMMON_USE_STRING_LIB */
 
-/** \addtogroup measure execution time
- ** \{ */
-#ifdef __linux__
-#include <sys/time.h>
-size_t __debug_measure_executeion_time_get_time_ms(void){
-    struct timeval t;
-    gettimeofday(&t, NULL);
-    return t.tv_sec * 1000L + t.tv_usec / 1000L;
-}
-#endif
-/** \} */
-
-/** \addtogroup message out
- ** \{ */
-void __debug_print_values(char *name_line, double values[], int count) {
+void __debug_print_values(char *name_line, double values[], unsigned int count) {
 	char *token = __debug_common_strtok(name_line, ",");
-	for (int i = 0; i < count && token; ++i) {
+	for (unsigned int i = 0; i < count && token; ++i) {
 		while (*token == ' ') token++;
-		printf("%s = %.3f", token, values[i]);
+		__DEBUG_PRINT_HOOK("%s = %.3f", token, values[i]);
 		token = __debug_common_strtok(NULL, ",");
-		(token != NULL ? (void)printf(", ") : (void)0);
+		(token != NULL ? (void)__DEBUG_PRINT_HOOK(", ") : (void)0);
 	}
-	printf("\r\n");
 }
+#endif /* DEBUG_PRINT_VALUES_ENABLE */
+
+#if DEBUG_PRINT_HEX_ENABLE
+void __debug_print_hex(const unsigned char *data, unsigned int len) {
+	for (unsigned int i = 0; i < len; i += 16) {
+        if (i > 0) {
+            __DEBUG_PRINT_HOOK("\n");
+        }
+        
+		unsigned int line_len = (len - i < 16) ? (len - i) : 16;
+        __DEBUG_PRINT_HOOK("  ");
+		for (unsigned int j = 0; j < line_len; j++) {
+			__DEBUG_PRINT_HOOK("%02x ", data[i + j]);
+		}
+		for (unsigned int j = line_len; j < 16; j++) {
+			__DEBUG_PRINT_HOOK("XX ");
+		}
+		__DEBUG_PRINT_HOOK("|");
+		for (unsigned int j = 0; j < line_len; j++) {
+			char c = (char)data[i + j];
+			__DEBUG_PRINT_HOOK("%c", (c >= 32 && c <= 126) ? c : '.');
+		}
+		for (unsigned int j = line_len; j < 16; j++) {
+			__DEBUG_PRINT_HOOK(".");
+		}
+	}
+}
+#endif /* DEBUG_PRINT_HEX_ENABLE */
 /** \} */
+
+/******************************************************************************/
+/*-----------------------------------Public-----------------------------------*/
+/******************************************************************************/
+/** \addtogroup message level
+ ** \{ */
+static unsigned char __debug_level = DEBUG_LEVEL_DEBUG;
+unsigned char debug_get_level(void)       { return __debug_level; }
+void debug_set_level(unsigned char level) { __debug_level = level; }
+/** \} */
+
+#endif /* DEBUG_PRINT_ENABLE */
